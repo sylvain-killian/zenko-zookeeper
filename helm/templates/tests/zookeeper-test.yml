@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-zookeeper-list-root"
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+  - name: {{ .Release.Name }}-zookeeper
+    image: zookeeper
+    command: ["sh", "-c", "bin/zkCli.sh -server {{ .Release.Name }}-zookeeper:2181 ls /"]
+  restartPolicy: Never
