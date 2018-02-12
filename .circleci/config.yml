@@ -8,10 +8,12 @@ jobs:
 
   lint_commits:
     docker:
-      - image: busybox
+      - image: alpine:3.6
     steps:
+      - run: apk add --no-cache nodejs nodejs-npm git
+      - run: npm install -g @commitlint/cli @commitlint/config-conventional
       - checkout
-      - run: "true"
+      - run: commitlint --from master --to HEAD -x "@commitlint/config-conventional"
 
   lint_helm:
     docker:
