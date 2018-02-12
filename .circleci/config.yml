@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  lint_commit:
+  lint_commits:
     docker:
       - image: busybox
     steps:
@@ -20,13 +20,55 @@ jobs:
     steps:
       - run: "true"
 
+  prepare_release:
+    docker:
+      - image: busybox
+    steps:
+      - run: "true"
+
+  build:
+    docker:
+      - image: busybox
+    steps:
+      - run: "true"
+
+  test:
+    docker:
+      - image: busybox
+    steps:
+      - run: "true"
+
+  publish:
+    docker:
+      - image: busybox
+    steps:
+      - run: "true"
+
 workflows:
   version: 2
   build_test_publish:
     jobs:
-      - lint_commit
+      - lint_commits
       - lint_helm
       - init:
           requires:
-            - lint_commit
+            - lint_commits
             - lint_helm
+
+      - prepare_release:
+          requires:
+            - init
+
+      - test:
+          requires:
+            - prepare_release
+
+      - publish:
+          requires:
+            - prepare_release
+            - test
+          filters:
+            branches:
+              only:
+                - master
+
