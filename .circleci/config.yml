@@ -1,0 +1,40 @@
+version: 2
+
+noop: &noop
+  docker:
+    - image: busybox
+  steps:
+    - run: "true"
+
+jobs:
+  # Init phase
+  pre_init:
+    <<: *noop
+
+  lint_commits:
+    docker:
+      - image: docker.io/alpine:3.6
+    steps:
+      # These should go in our own Docker image, no need to build every single time
+      - run: apk add --no-cache nodejs nodejs-npm git
+      - run: npm install -g @commitlint/cli @commitlint/config-conventional
+      - checkout
+      # Assume target branch is always 'master' :-/
+      - run: commitlint --from master --to $CIRCLE_SHA1 -x "@commitlint/config-conventional"
+
+  post_init:
+    <<: *noop
+
+workflows:
+  version: 2
+  pipeline:
+    jobs:
+      # Init phase
+      - pre_init
+      - lint_commits:
+          requires:
+            - pre_init
+      - post_init:
+          requires:
+            - pre_init
+            - lint_commits
