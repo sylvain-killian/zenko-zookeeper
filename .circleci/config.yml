@@ -78,7 +78,7 @@ jobs:
     docker:
       - image: busybox
     steps:
-      -run: "true"
+      - run: "true"
 
   publish:
     docker:
