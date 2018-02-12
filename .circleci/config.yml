@@ -32,6 +32,18 @@ jobs:
     steps:
       - run: "true"
 
+  helm_install:
+    docker:
+      - image: busybox
+    steps:
+      - run: "true"
+
+  helm_test:
+    docker:
+      - image: busybox
+    steps:
+      - run: "true"
+
   test:
     docker:
       - image: busybox
@@ -59,9 +71,18 @@ workflows:
           requires:
             - init
 
+      - helm_install:
+          requires:
+            - lint_helm
+
+      - helm_test:
+          requires:
+            - helm_install
+
       - test:
           requires:
             - prepare_release
+            - helm_test
 
       - publish:
           requires:
