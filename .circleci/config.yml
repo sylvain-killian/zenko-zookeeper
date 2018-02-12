@@ -21,7 +21,7 @@ jobs:
       # - run: helm lint --strict charts/zenko-zookeeper
       - run: "true"
 
-  init:
+  post_init:
     docker:
       - image: busybox
     steps:
@@ -33,7 +33,7 @@ jobs:
     steps:
       - run: "true"
 
-  prepare_release:
+  post_prepare_release:
     docker:
       - image: busybox
     steps:
@@ -45,7 +45,7 @@ jobs:
     steps:
       - run: "true"
 
-  build:
+  post_build:
     docker:
       - image: busybox
     steps:
@@ -81,7 +81,7 @@ jobs:
     steps:
       - run: "true"
 
-  test:
+  post_test:
     docker:
       - image: busybox
     steps:
@@ -93,7 +93,7 @@ jobs:
     steps:
       - run: "true"
 
-  publish:
+  post_publish:
     docker:
       - image: busybox
     steps:
@@ -110,7 +110,7 @@ workflows:
       - lint_helm:
           requires:
             - pre_init
-      - init:
+      - post_init:
           requires:
             - pre_init
             - lint_commits
@@ -118,14 +118,14 @@ workflows:
 
       - pre_prepare_release:
           requires:
-            - init
-      - prepare_release:
+            - post_init
+      - post_prepare_release:
           requires:
             - pre_prepare_release
 
       - pre_test:
           requires:
-            - prepare_release
+            - post_prepare_release
 
       - helm_install:
           requires:
@@ -144,7 +144,7 @@ workflows:
           requires:
             - pre_test
 
-      - test:
+      - post_test:
           requires:
             - pre_test
             - helm_install
@@ -154,13 +154,13 @@ workflows:
 
       - pre_publish:
           requires:
-            - test
+            - post_test
           filters:
             branches:
               only:
                 - master
 
-      - publish:
+      - post_publish:
           requires:
             - pre_publish
           filters:
