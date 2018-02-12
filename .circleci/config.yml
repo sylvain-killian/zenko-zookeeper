@@ -24,6 +24,23 @@ jobs:
 
   post_init:
     <<: *noop
+  build:
+    docker:
+      - image: zenko/zenko-releng:0.0.3
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: make release
+          environment:
+            DOCKER_REGISTRY: "zenko/"
+            # zenko/ is equivalent to docker.io/zenko/ but
+            # docker images docker.io/zenko/<image> doesn't work
+            # (only docker images zenko/<image> works)
+      - run: cat build/env.sh
+      - run: cat build/release.patch
+      - run: . ./build/env.sh; make docker-check-build
+      - run: . ./build/env.sh; make docker-push || true
 
 workflows:
   version: 2
@@ -38,3 +55,6 @@ workflows:
           requires:
             - pre_init
             - lint_commits
+      - build:
+          requires:
+            - post_init
