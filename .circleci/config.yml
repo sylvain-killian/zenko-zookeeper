@@ -1,0 +1,32 @@
+version: 2
+jobs:
+  lint_commit:
+    docker:
+      - image: busybox
+    steps:
+      - checkout
+      - run: "true"
+
+  lint_helm:
+    docker:
+      - image: busybox
+    steps:
+      - checkout
+      - run: "true"
+
+  init:
+    docker:
+      - image: busybox
+    steps:
+      - run: "true"
+
+workflows:
+  version: 2
+  build_test_publish:
+    jobs:
+      - lint_commit
+      - lint_helm
+      - init:
+        requires:
+          - lint_commit
+          - lint_helm
