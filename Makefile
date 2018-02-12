@@ -52,8 +52,8 @@ define release_vars
     GIT_DIRTY := $$(GIT_DIRTY)
     ifeq ($$(RELEASE),1)
       COMMIT_PARSED := $$(shell git log -1 --pretty=%B|conventional-commits-parser)
-      COMMIT_TYPE ?= $$(shell echo '$(COMMIT_PARSED)'| jq '.[0].type')
-      ifneq ($$(COMMIT_TYPE),)
+      COMMIT_TYPE ?= $$(shell echo '$$(COMMIT_PARSED)'| jq -r '.[0].type')
+      ifneq ($$(COMMIT_$$(COMMIT_TYPE)),)
         CURRENT_VERSION := v$$(shell semver $$(PREV_VERSION) -i $$(COMMIT_$$(COMMIT_TYPE)))
       endif
     endif
@@ -160,7 +160,7 @@ $(BUILD_ENV_FILE): $(DOCKER_CHECK_TARGETS) | ${BUILD_DIR}
 	@for CHART in $(CHARTS_LIST); do \
 	    sed -e "s/\(version:\).*/\1 $(DOCKER_TAG)/" -i $${CHART}/Chart.yaml; \
 	done
-	@if [ ! -z "${COMMIT_TYPE}" -a "${COMMIT}" == "1" ]; then \
+	@if [ ! -z "$(COMMIT_$(COMMIT_TYPE))" -a "${COMMIT}" == "1" ]; then \
 	    git commit -a -m 'New release $(CURRENT_VERSION)'; \
 	    git format-patch -1 --stdout > $(RELEASE_PATCH_FILE); \
 	    git tag -a $(CURRENT_VERSION) -m 'chore(release): release of $(CURRENT_VERSION)'; \
@@ -180,14 +180,16 @@ helm-package:
 	done
 
 publish:
-	set -eu -o pipefail; \
-	git push origin $(CURRENT_VERSION); \
-	$(MAKE) docker-push; \
-	hub release create \
-	-a zenko-zookeeper-${DOCKER_TAG}.tgz \
-	-m '$(CURRENT_VERSION)' \
-	$(CURRENT_VERSION); \
-	git push origin master
+	if [ "$$(git rev-parse HEAD)" != "$$(git rev-parse @{u})" ]; then \
+	    set -eu -o pipefail; \
+	    git push origin $(CURRENT_VERSION); \
+	    $(MAKE) docker-push; \
+	    hub release create \
+	    -a zenko-zookeeper-${DOCKER_TAG}.tgz \
+	    -m '$(CURRENT_VERSION)' \
+	    $(CURRENT_VERSION); \
+	    git push origin master; \
+	fi
 endif
 
 %.sh: %  # disable implicit rule for %.sh
