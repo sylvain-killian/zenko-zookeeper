@@ -91,14 +91,15 @@ workflows:
   build_test_publish:
     jobs:
       - pre_init
-      - lint_commits
+      - lint_commits:
           requires:
             - pre_init
-      - lint_helm
+      - lint_helm:
           requires:
             - pre_init
       - init:
           requires:
+            - pre_init
             - lint_commits
             - lint_helm
 
@@ -109,7 +110,7 @@ workflows:
           requires:
             - pre_prepare_release
 
-      - pre_test
+      - pre_test:
           requires:
             - prepare_release
 
@@ -119,11 +120,13 @@ workflows:
 
       - helm_test:
           requires:
+            - pre_test
             - helm_install
 
       - test:
           requires:
             - pre_test
+            - helm_test
             - helm_test
 
       - pre_publish:
