@@ -24,6 +24,40 @@ jobs:
 
   post_init:
     <<: *noop
+  build:
+    docker:
+      - image: zenko/zenko-releng:0.0.4
+    environment:
+      - DOCKER_REGISTRY: "zempashi/"
+        # zenko/ is equivalent to docker.io/zenko/ but
+        # docker images docker.io/zenko/<image> doesn't work
+        # (only docker images zenko/<image> works)
+      - GITHUB_USER: 'zempashi'
+      - RELEASE: '1'
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: |
+          git config --global user.email "ci-zenko@scality.com"
+          ssh-add /root/.ssh/id_rsa
+          ssh-add -L | grep id_rsa > /root/.ssh/id_rsa.pub
+          ssh-add -d /root/.ssh/id_rsa
+        # Enable github push ability.
+        # TODO(jgirardi): remove this hack
+      - run: |
+          if [ "$CIRCLE_BRANCH" == "master" ]; then
+              export COMMIT=1
+          fi
+              make release
+              cat build/env.sh
+              echo '============'
+              cat build/release.patch || true
+      - run: make build-all
+      - run: docker login --username zempashi --password ${DOCKER_PASS}
+      - run: |
+          if [ "$CIRCLE_BRANCH" == "master" ]; then
+            make publish
+          fi
 
 workflows:
   version: 2
@@ -38,3 +72,6 @@ workflows:
           requires:
             - pre_init
             - lint_commits
+      - build:
+          requires:
+            - post_init
