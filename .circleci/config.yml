@@ -9,10 +9,10 @@ jobs:
 
   lint_helm:
     docker:
-      - image: busybox
+      - image: docker.io/lachlanevenson/k8s-helm:2.7.2
     steps:
       - checkout
-      - run: "true"
+      - run: helm lint --strict charts/zenko-zookeeper
 
   init:
     docker:
