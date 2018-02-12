@@ -18,7 +18,8 @@ jobs:
       - image: docker.io/lachlanevenson/k8s-helm:v2.8.1
     steps:
       - checkout
-      - run: helm lint --strict charts/zenko-zookeeper
+      # - run: helm lint --strict charts/zenko-zookeeper
+      - run: "true"
 
   init:
     docker:
@@ -63,6 +64,18 @@ jobs:
       - run: "true"
 
   helm_test:
+    docker:
+      - image: busybox
+    steps:
+      - run: "true"
+
+  docker_image_tests:
+    docker:
+      - image: busybox
+    steps:
+      - run: "true"
+
+  container_tools_image_tests:
     docker:
       - image: busybox
     steps:
@@ -123,15 +136,29 @@ workflows:
             - pre_test
             - helm_install
 
+      - docker_image_tests:
+          requires:
+            - pre_test
+
+      - container_tools_image_tests:
+          requires:
+            - pre_test
+
       - test:
           requires:
             - pre_test
+            - helm_install
             - helm_test
-            - helm_test
+            - docker_image_tests
+            - container_tools_image_tests
 
       - pre_publish:
           requires:
             - test
+          filters:
+            branches:
+              only:
+                - master
 
       - publish:
           requires:
