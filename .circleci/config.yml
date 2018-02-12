@@ -9,7 +9,7 @@ jobs:
 
   lint_helm:
     docker:
-      - image: docker.io/lachlanevenson/k8s-helm:2.7.2
+      - image: docker.io/lachlanevenson/k8s-helm:v2.8.1
     steps:
       - checkout
       - run: helm lint --strict charts/zenko-zookeeper
