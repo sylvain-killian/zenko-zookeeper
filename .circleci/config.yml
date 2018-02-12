@@ -27,6 +27,6 @@ workflows:
       - lint_commit
       - lint_helm
       - init:
-        requires:
-          - lint_commit
-          - lint_helm
+          requires:
+            - lint_commit
+            - lint_helm
