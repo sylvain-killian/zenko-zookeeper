@@ -14,7 +14,7 @@ resources:
 heap: "2G"
 storage: "50Gi"
 # storageClass: default
-imagePullPolicy: "Always"
+imagePullPolicy: "IfNotPresent"
 tickTimeMs: 2000
 initTicks: 10
 syncTicks: 5
