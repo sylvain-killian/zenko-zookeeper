@@ -1,12 +1,13 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ .Release.Name }}-zookeeper-list-root"
+  name: "{{ .Release.Name }}-test-list-root"
   annotations:
     "helm.sh/hook": test-success
 spec:
   containers:
-  - name: {{ .Release.Name }}-zookeeper
-    image: zookeeper
-    command: ["sh", "-c", "bin/zkCli.sh -server {{ .Release.Name }}-zookeeper:2181 ls /"]
+  - name: {{ .Release.Name }}-test-client
+    imagePullPolicy: {{ .Values.imagePullPolicy }}
+    image: "{{ .Values.Image }}:{{ .Values.ImageTag }}"
+    command: ["sh", "-c", "zkCli.sh -server {{ .Release.Name }}-zenko-zookeeper:2181 ls /"]
   restartPolicy: Never
