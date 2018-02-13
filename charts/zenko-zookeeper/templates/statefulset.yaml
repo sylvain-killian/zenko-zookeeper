@@ -15,6 +15,8 @@ spec:
       labels:
         app: {{ include "zookeeper.name" . | quote }}
         release: {{ .Release.Name | quote }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        heritage: {{ .Release.Service | quote }}
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/path: "/"
