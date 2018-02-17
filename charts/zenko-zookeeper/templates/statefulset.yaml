@@ -28,8 +28,8 @@ spec:
 {{- end }}
       containers:
       - name: {{ template "zookeeper.name" . }}-server
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
-        image: "{{ .Values.Image }}:{{ .Values.ImageTag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         resources:
 {{ toYaml .Values.resources | indent 10 }}
         ports:
@@ -69,8 +69,9 @@ spec:
           timeoutSeconds: {{ .Values.probeTimeoutSeconds }}
         volumeMounts:
         - name: datadir
-          mountPath: /var/lib/zookeeper
-          subPath: data
+          mountPath: /data
+        - name: datalogdir
+          mountPath: /datalog
       {{- if eq .Values.security.enabled true }}
       securityContext:
         runAsUser: {{ .Values.security.runAsUser }}
@@ -83,7 +84,17 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: {{ .Values.storage }}
-      {{- if .Values.storageClass }}
-      storageClassName: {{ .Values.storageClass | quote }}
+          storage: {{ .Values.storage.data.size | quote }}
+      {{- if .Values.storage.data.storageClass }}
+      storageClassName: {{ .Values.storage.data.storageClass | quote }}
+      {{- end }}
+  - metadata:
+      name: datalogdir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.storage.log.size | quote }}
+      {{- if .Values.storage.log.storageClass }}
+      storageClassName: {{ .Values.storage.log.storageClass | quote }}
       {{- end }}

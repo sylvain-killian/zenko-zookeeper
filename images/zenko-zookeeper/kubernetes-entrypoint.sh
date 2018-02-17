@@ -34,7 +34,6 @@ function compute_server_list() {
     if [ -z $ZOO_REPLICAS ]; then
         die "ZOO_REPLICAS is a mandatory environment variable"
     fi
-    local ZOO_SERVERS
     ZOO_SERVERS=""
     for (( i=1; i<=$ZOO_REPLICAS; i++ ))
     do
@@ -51,7 +50,7 @@ function create_java_env() {
 # SERVER_JVMFLAGS only: no need to have a huge heap for zkCli, and loading the
 # Prometheus agent on the same port would make it go nuts.
 SERVER_JVMFLAGS="-Xmx$ZOO_HEAP_SIZE -Xms$ZOO_HEAP_SIZE"
-SERVER_JVMFLAGS="\${JVMFLAGS} -javaagent:${PROMETHEUS_AGENT_JAR}=${PROMETHEUS_AGENT_PORT}:${PROMETHEUS_AGENT_CONFIG}"
+SERVER_JVMFLAGS="\${SERVER_JVMFLAGS} -javaagent:${PROMETHEUS_AGENT_JAR}=${PROMETHEUS_AGENT_PORT}:${PROMETHEUS_AGENT_CONFIG}"
 EOF
     # echo "ZOO_LOG_DIR=$ZOO_LOG_DIR" >> $JAVA_ENV_FILE
     echo "Wrote JVM configuration to $JAVA_ENV_FILE"
