@@ -34,7 +34,6 @@ function compute_server_list() {
     if [ -z $ZOO_REPLICAS ]; then
         die "ZOO_REPLICAS is a mandatory environment variable"
     fi
-    local ZOO_SERVERS
     ZOO_SERVERS=""
     for (( i=1; i<=$ZOO_REPLICAS; i++ ))
     do
