@@ -12,7 +12,6 @@ resources:
     cpu: 1
     memory: 4Gi
 heap: "2G"
-imagePullPolicy: "IfNotPresent"
 tickTimeMs: 2000
 initTicks: 10
 syncTicks: 5
@@ -26,8 +25,11 @@ security:
   enabled: false
   runAsUser: 1000
   fsGroup: 1000
-Image: docker.io/zenko/zenko-zookeeper
-ImageTag: 0.0.2
+
+image:
+  repository: docker.io/zenko/zenko-zookeeper
+  tag: 0.0.2
+  pullPolicy: IfNotPresent
 
 storage:
   data:
