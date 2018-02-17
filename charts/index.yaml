@@ -1,6 +1,23 @@
 apiVersion: v1
 entries:
   zenko-zookeeper:
+  - created: 2018-02-16T18:17:44.203219157-08:00
+    description: Centralized service for maintaining configuration information, naming,
+      providing distributed synchronization, and providing group services.
+    digest: ef4727fcc217021ed1079f07f8d2e99ffccb03e9269fbfa4e7d87501d202f423
+    home: https://zookeeper.apache.org/
+    icon: https://zookeeper.apache.org/images/zookeeper_small.gif
+    maintainers:
+    - email: zenko-platform@scality.com
+      name: Scality Zenko Platform Team
+    name: zenko-zookeeper
+    sources:
+    - https://github.com/apache/zookeeper
+    - https://github.com/kubernetes/contrib/tree/master/statefulset/zookeeper
+    - https://github.com/Scality/zenko-zookeeper
+    urls:
+    - https://github.com/scality/zenko-zookeeper/releases/download/v0.0.5/zenko-zookeeper-0.0.5.tgz
+    version: 0.0.5
   - created: 2018-02-13T18:51:18.138152282+01:00
     description: Centralized service for maintaining configuration information, naming,
       providing distributed synchronization, and providing group services.
@@ -35,4 +52,4 @@ entries:
     urls:
     - https://github.com/scality/zenko-zookeeper/releases/download/v0.0.3/zenko-zookeeper-0.0.3.tgz
     version: 0.0.3
-generated: 2018-02-13T18:51:18.137683006+01:00
+generated: 2018-02-16T18:17:44.202736266-08:00
