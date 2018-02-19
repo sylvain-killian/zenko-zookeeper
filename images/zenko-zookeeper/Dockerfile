@@ -53,7 +53,7 @@ LABEL maintainer="zenko-platform@scality.com" \
       org.label-schema.version="$VERSION" \
       org.label-schema.schema-version="1.0" \
       org.label-schema.docker.cmd="docker run -p $ZOO_PORT:$ZOO_PORT -p $PROMETHEUS_AGENT_PORT:$PROMETHEUS_AGENT_PORT -h zookeeper-0 -e ZOO_REPLICAS=1 zenko/zenko-zookeeper" \
-      org.label-schema.docker.debug="docker exec -it \$CONTAINER zkCli.sh" \
+      org.label-schema.docker.cmd.debug="docker exec -it \$CONTAINER zkCli.sh" \
       org.label-schema.docker.params="PROMETHEUS_AGENT_PORT=port of Prometheus exporter,ZOO_REPLICAS=number of Zookeeper replicas in the ensemble" \
       # https://github.com/opencontainers/image-spec/blob/master/annotations.md
       org.opencontainers.image.created="$BUILD_DATE" \
