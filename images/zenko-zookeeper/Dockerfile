@@ -35,6 +35,7 @@ EXPOSE $PROMETHEUS_AGENT_PORT
 COPY zkOk.sh zkMetrics.sh /usr/local/bin/
 COPY prometheus_agent.yml $PROMETHEUS_AGENT_CONFIG
 COPY kubernetes-entrypoint.sh /
+COPY tests.sh /
 
 ENTRYPOINT ["/kubernetes-entrypoint.sh"]
 # CMD is not inherited from the base image
@@ -54,6 +55,7 @@ LABEL maintainer="zenko-platform@scality.com" \
       org.label-schema.schema-version="1.0" \
       org.label-schema.docker.cmd="docker run -p $ZOO_PORT:$ZOO_PORT -p $PROMETHEUS_AGENT_PORT:$PROMETHEUS_AGENT_PORT -h zookeeper-0 -e ZOO_REPLICAS=1 zenko/zenko-zookeeper" \
       org.label-schema.docker.cmd.debug="docker exec -it \$CONTAINER zkCli.sh" \
+      org.label-schema.docker.cmd.test="docker exec -it \$CONTAINER env ZOOKEEPER_MODE='standalone' bash_unit /tests.sh" \
       org.label-schema.docker.params="PROMETHEUS_AGENT_PORT=port of Prometheus exporter,ZOO_REPLICAS=number of Zookeeper replicas in the ensemble" \
       # https://github.com/opencontainers/image-spec/blob/master/annotations.md
       org.opencontainers.image.created="$BUILD_DATE" \
@@ -80,4 +82,7 @@ LABEL maintainer="zenko-platform@scality.com" \
 RUN set -x -o pipefail \
     && mkdir -p $(dirname "${PROMETHEUS_AGENT_JAR}") \
     && wget -q -O "${PROMETHEUS_AGENT_JAR}" "${PROMETHEUS_AGENT_URL}" \
-    && echo "${PROMETHEUS_AGENT_MD5SUM}  ${PROMETHEUS_AGENT_JAR}" | md5sum -c
+    && echo "${PROMETHEUS_AGENT_MD5SUM}  ${PROMETHEUS_AGENT_JAR}" | md5sum -c \
+    && wget -q -O /usr/local/bin/bash_unit https://raw.githubusercontent.com/pgrange/bash_unit/v1.6.1/bash_unit \
+    && echo "6dc5d33e0838251f5f7d3c524572b4c5  /usr/local/bin/bash_unit" | md5sum -c \
+    && chmod a+x /usr/local/bin/bash_unit
