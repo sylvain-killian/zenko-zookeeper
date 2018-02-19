@@ -9,5 +9,12 @@ spec:
   - name: {{ .Release.Name }}-zenko-zookeeper-test
     imagePullPolicy: {{ .Values.image.pullPolicy }}
     image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-    command: ["sh", "-c", "zkCli.sh -server {{ .Release.Name }}-zenko-zookeeper:2181 ls /"]
+    command: ["bash_unit", "/tests.sh"]
+    env:
+    - name: ZOOKEEPER_HOST
+      value: {{ template "zookeeper.fullname" . }}
+    - name: ZOOKEEPER_MODE
+      value: replicated
+    - name: PROMETHEUS_AGENT_HOST
+      value: {{ template "zookeeper.fullname" . }}-0.{{ template "zookeeper.fullname" . }}-headless
   restartPolicy: Never
