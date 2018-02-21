@@ -28,7 +28,7 @@ security:
 
 image:
   repository: docker.io/zenko/zenko-zookeeper
-  tag: 0.0.5
+  tag: 0.0.6
   pullPolicy: IfNotPresent
 
 storage:
