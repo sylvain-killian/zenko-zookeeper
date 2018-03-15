@@ -9,6 +9,8 @@ metadata:
     heritage: {{ .Release.Service | quote }}
 spec:
   podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
   serviceName: {{ template "zookeeper.fullname" . }}-headless
   replicas: {{ .Values.servers }}
   template:
