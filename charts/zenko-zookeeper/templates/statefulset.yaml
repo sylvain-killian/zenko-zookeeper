@@ -8,6 +8,7 @@ metadata:
     release: {{ .Release.Name | quote }}
     heritage: {{ .Release.Service | quote }}
 spec:
+  podManagementPolicy: Parallel
   serviceName: {{ template "zookeeper.fullname" . }}-headless
   replicas: {{ .Values.servers }}
   template:
