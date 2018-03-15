@@ -4,6 +4,9 @@
 # name: value
 servers: 3
 # minAvailable: 2
+
+# Configuring the memory requests and limits will
+# also configure the JVM heap size accordingly
 resources:
   requests:
     cpu: 500m
@@ -11,7 +14,6 @@ resources:
   limits:
     cpu: 1
     memory: 4Gi
-heap: "2G"
 tickTimeMs: 2000
 initTicks: 10
 syncTicks: 5

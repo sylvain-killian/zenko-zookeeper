@@ -46,7 +46,10 @@ spec:
         - name : ZOO_REPLICAS
           value: "{{ .Values.servers }}"
         - name : ZOO_HEAP_SIZE
-          value: "{{ .Values.heap }}"
+          valueFrom:
+            resourceFieldRef:
+              containerName: {{ template "zookeeper.name" . }}-server
+              resource: requests.memory
         - name : ZOO_TICK_TIME
           value: "{{ .Values.tickTimeMs }}"
         - name : ZOO_INIT_LIMIT
