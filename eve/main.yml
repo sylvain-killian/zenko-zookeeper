@@ -13,80 +13,43 @@ stages:
         aggressor: eve/workers/aggressor
     steps:
     - TriggerStages:
-        name: trigger all the examples
+        name: trigger all the tests
         stage_names:
-        - access_cluster_1_8_8
-        - access_cluster_1_9_6
-        - non_existing_cluster
-        - without_namespace
+        - cluster_1_9_6
 
-  access_cluster_1_9_6:
+  cluster_1_9_6:
     worker:
       <<: *pod
       service:
         requests:
           version: "1.9.6"
         namespaces:
-        - "mynamespace"    # <<< the default namespace for that stage
-        - "mynamespace-2"
+        - "testNamespace"    # <<< the default namespace for that stage
     steps:
+    - Git: &git_pull
+        name: git pull
+        repourl: "%(prop:git_reference)s"
+        mode: full
+        method: clobber
+        retryFetch: true
+        haltOnFailure: true
     - ShellCommand:
-        name: display server version
-        command: kubectl version
+        name: install helm (tiller into kubernetes)
+        command: >-
+          helm init
+          --tiller-namespace %(prop:testNamespace)s
+          --service-account default
+          --override spec.template.spec.containers[0].resources.limits.cpu=0.5
+          --override spec.template.spec.containers[0].resources.limits.memory=1G
+          --override spec.template.spec.containers[0].resources.requests.cpu=0.1
+          --override spec.template.spec.containers[0].resources.requests.memory=100M
+          --wait
+    - ShellCommand:
+        name: list files
+        command: ls
     - ShellCommand:
         name: can access the default namespace (first in list)
-        command: kubectl get pod
-    - ShellCommand:
-        name: can access the second namespace
-        command: kubectl get pods --namespace %(prop:mynamespace-2)s
-    - ShellCommand:
-        name: cannot access other namespaces
-        command: kubectl get pods --namespace default
-    - ShellCommand:
-        name: can create pods
-        command: kubectl run my-nginx --image=nginx --replicas=2 --port=80
-    - ShellCommand:
-        name: list pods and deployment
-        command: kubectl get pods && kubectl get deployment
-
-  access_cluster_1_8_8:
-    worker:
-      <<: *pod
-      service:
-        requests:
-          version: "1.8.8"
-        namespaces:
-        - "mynamespace"
-    steps:
-    - ShellCommand:
-        name: display server version
-        command: kubectl version
-    - ShellCommand:
-        name: run helm
-        command: helm install
-
-  non_existing_cluster:
-    worker:
-      <<: *pod
-      service:
-        requests:
-          version: "1.6.3"
-        namespaces:
-        - "mynamespace"
-    steps:
-    - ShellCommand:
-        name: will never run
-        command: exit 1
-
-  without_namespace:
-    worker:
-      <<: *pod
-      service:
-        requests:
-          version: "1.8.8"
-        #namespaces:
-        #- "mynamespace"
-    steps:
-    - ShellCommand:
-        name: run helm
-        command: helm install
+        command: >-
+          helm install --tiller-namespace %(prop:testNamespace)s --wait
+          --namespace  %(prop:testNamespace)s
+          --name zenko-zookeeper-test charts/zenko-zookeeper
